@@ -21,23 +21,40 @@ export default function App() {
         const motion = Math.random() > 0.5;
         setIsLoading(true);
         setMotionDetected(motion);
-        setLog(
-          (prevLog) =>
-            prevLog +
-            (motion
-              ? `\nMotion detected\nLights ON\nGarage OPEN`
-              : `\nNo motion\nLights OFF\nGarage CLOSED`)
-        );
+        setLightsOn(motion);
+        setGarageOpen(motion);
+        // setLog(
+        //   (prevLog) =>
+        //     prevLog +
+        //     (motion
+        //       ? `\nMotion detected\nLights ON\nGarage OPEN`
+        //       : `\nNo motion\nLights OFF\nGarage CLOSED`)
+        // );
+
+        // setLog(
+        //   motion
+        //     ? `Motion detected\nLights ON\nGarage OPEN`
+        //     : `No motion\nLights OFF\nGarage CLOSED`
+        // );
 
         setTemperature((prev) => {
           const newTemp = prev + (Math.random() * 2 - 1);
+          const newLog = motion
+            ? `Motion detected\nLights ON\nGarage OPEN\nTemperature: ${newTemp.toFixed(
+                1
+              )}°C`
+            : `No motion\nLights OFF\nGarage CLOSED\nTemperature: ${newTemp.toFixed(
+                1
+              )}°C`;
 
+          setLog(newLog);
           return newTemp;
         });
       }, 5000);
-      setLog(
-        (prevLog) => prevLog + `\nTemperature: ${temperature.toFixed(1)}°C`
-      );
+      // setLog(
+      //   (prevLog) => prevLog + `\nTemperature: ${temperature.toFixed(1)}°C`
+      // );
+      // setLog(`\nTemperature: ${temperature.toFixed(1)}°C`);
 
       return () => clearInterval(interval);
     } else {
@@ -46,7 +63,7 @@ export default function App() {
       setLightsOn(false);
       setIsLoading(false);
     }
-  }, [running, temperature]);
+  }, [running]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-green-950 text-white flex flex-col items-center p-8 font-sans">
@@ -78,7 +95,7 @@ export default function App() {
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
           onClick={() => {
             setDoorLocked(true);
-            setLog((prevLog) => prevLog + "\nThe Door is Locked");
+            setLog("\nThe Door is Locked");
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -91,7 +108,7 @@ export default function App() {
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
           onClick={() => {
             setDoorLocked(false);
-            setLog((prevLog) => prevLog + "\nThe Door is Unlocked");
+            setLog("\nThe Door is Unlocked");
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -104,7 +121,7 @@ export default function App() {
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
           onClick={() => {
             setGasLeak(true);
-            setLog((prevLog) => prevLog + "\nGas ON!");
+            setLog("\nGas ON!");
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -117,7 +134,7 @@ export default function App() {
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
           onClick={() => {
             setGasLeak(false);
-            setLog((prevLog) => prevLog + "\nGas OFF!");
+            setLog("\nGas OFF!");
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -130,7 +147,7 @@ export default function App() {
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
           onClick={() => {
             setRunning(true);
-            setLog((prevLog) => prevLog + "\nAutomation Start!");
+            setLog("\nAutomation Starting...");
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -154,7 +171,7 @@ export default function App() {
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
           onClick={() => {
             setRunning(false);
-            setLog((prevLog) => prevLog + "\nAutomation Stop!");
+            setLog("\nAutomation Stop!");
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
