@@ -13,6 +13,7 @@ export default function App() {
   const [garageOpen, setGarageOpen] = useState(false);
   const [running, setRunning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [log, setLog] = useState("");
 
   useEffect(() => {
     if (running) {
@@ -20,18 +21,24 @@ export default function App() {
         const motion = Math.random() > 0.5;
         setIsLoading(true);
         setMotionDetected(motion);
-        if (motion) {
-          setLightsOn(true);
-          setGarageOpen(true);
-        } else {
-          setLightsOn(false);
-          setGarageOpen(false);
-        }
-        setTemperature((prev) => prev + (Math.random() * 2 - 1));
-        // setMotionDetected(Math.random() > 0.5);
-        // setGarageOpen(Math.random() > 0.5);
-        // setLightsOn(Math.random() > 0.5);
+        setLog(
+          (prevLog) =>
+            prevLog +
+            (motion
+              ? `\nMotion detected\nLights ON\nGarage OPEN`
+              : `\nNo motion\nLights OFF\nGarage CLOSED`)
+        );
+
+        setTemperature((prev) => {
+          const newTemp = prev + (Math.random() * 2 - 1);
+
+          return newTemp;
+        });
       }, 5000);
+      setLog(
+        (prevLog) => prevLog + `\nTemperature: ${temperature.toFixed(1)}°C`
+      );
+
       return () => clearInterval(interval);
     } else {
       setMotionDetected(false);
@@ -39,7 +46,7 @@ export default function App() {
       setLightsOn(false);
       setIsLoading(false);
     }
-  }, [running]);
+  }, [running, temperature]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 to-green-950 text-white flex flex-col items-center p-8 font-sans">
@@ -47,127 +54,21 @@ export default function App() {
         🏠 Smart Home System
       </h1>
 
-      {/* Status Cards */}
-      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Security Card */}
-        <motion.div
-          className={`bg-gradient-to-r ${
-            doorLocked
-              ? "from-red-500 to-pink-500"
-              : "from-green-500 to-teal-500"
-          } rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300`}
+      <div className="w-full h-[400px] max-w-4xl p-4 mb-4 text-white bg-gray-900 rounded-xl relative">
+        <div className="pr-4 text-xl font-semibold overflow-y-auto h-full scrollbar">
+          {" "}
+          {log.split("\n").map((line, index) => (
+            <p key={index}>{line}</p>
+          ))}
+        </div>
+        <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          className=" px-8 py-4 rounded-lg shadow-md bg-red-500 hover:bg-red-700 absolute bottom-4 right-8"
+          onClick={() => setLog("")}
         >
-          <div className="flex items-center space-x-4">
-            <span className="text-3xl">🔐</span>
-            <div>
-              <p className="text-sm text-gray-200">Security</p>
-              <p className="text-2xl font-semibold text-white">
-                {doorLocked ? "Locked" : "Unlocked"}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Motion Card */}
-        <motion.div
-          className={`bg-gradient-to-r ${
-            motionDetected
-              ? "from-yellow-500 to-orange-500"
-              : "from-gray-500 to-gray-700"
-          } rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <div className="flex items-center space-x-4">
-            <span className="text-3xl">🚶</span>
-            <div>
-              <p className="text-sm text-gray-200">Motion</p>
-              <p className="text-2xl font-semibold text-white">
-                {motionDetected ? "Detected" : "No Motion"}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Lights Card */}
-        <motion.div
-          className={`bg-gradient-to-r ${
-            lightsOn
-              ? "from-yellow-500 to-amber-500"
-              : "from-gray-500 to-gray-700"
-          } rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <div className="flex items-center space-x-4">
-            <span className="text-3xl">💡</span>
-            <div>
-              <p className="text-sm text-gray-200">Lights</p>
-              <p className="text-2xl font-semibold text-white">
-                {lightsOn ? "ON" : "OFF"}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Garage Card */}
-        <motion.div
-          className={`bg-gradient-to-r ${
-            garageOpen
-              ? "from-red-500 to-pink-500"
-              : "from-green-500 to-teal-500"
-          } rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <div className="flex items-center space-x-4">
-            <span className="text-3xl">🚘</span>
-            <div>
-              <p className="text-sm text-gray-200">Garage</p>
-              <p className="text-2xl font-semibold text-white">
-                {garageOpen ? "OPEN" : "CLOSED"}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Gas Card */}
-        <motion.div
-          className={`bg-gradient-to-r ${
-            gasLeak ? "from-red-500 to-pink-500" : "from-green-500 to-teal-500"
-          } rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300`}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <div className="flex items-center space-x-4">
-            <span className="text-3xl">🔥</span>
-            <div>
-              <p className="text-sm text-gray-200">Gas</p>
-              <p className="text-2xl font-semibold text-white">
-                {gasLeak ? "ON" : "OFF"}
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Temperature Card */}
-        <motion.div
-          className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <div className="flex items-center space-x-4">
-            <span className="text-3xl">🌡</span>
-            <div>
-              <p className="text-sm text-gray-200">Temperature</p>
-              <p className="text-2xl font-semibold text-white">
-                {temperature.toFixed(1)}°C
-              </p>
-            </div>
-          </div>
-        </motion.div>
+          Clear
+        </motion.button>
       </div>
 
       {/* Control Buttons */}
@@ -175,7 +76,10 @@ export default function App() {
         {/* Lock Door Button */}
         <motion.button
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
-          onClick={() => setDoorLocked(true)}
+          onClick={() => {
+            setDoorLocked(true);
+            setLog((prevLog) => prevLog + "\nThe Door is Locked");
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -185,7 +89,10 @@ export default function App() {
         {/* Unlock Door Button */}
         <motion.button
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
-          onClick={() => setDoorLocked(false)}
+          onClick={() => {
+            setDoorLocked(false);
+            setLog((prevLog) => prevLog + "\nThe Door is Unlocked");
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -195,7 +102,10 @@ export default function App() {
         {/* Gas ON Button */}
         <motion.button
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
-          onClick={() => setGasLeak(true)}
+          onClick={() => {
+            setGasLeak(true);
+            setLog((prevLog) => prevLog + "\nGas ON!");
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -205,7 +115,10 @@ export default function App() {
         {/* Gas OFF Button */}
         <motion.button
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
-          onClick={() => setGasLeak(false)}
+          onClick={() => {
+            setGasLeak(false);
+            setLog((prevLog) => prevLog + "\nGas OFF!");
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -215,7 +128,10 @@ export default function App() {
         {/* Start Automation Button */}
         <motion.button
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
-          onClick={() => setRunning(true)}
+          onClick={() => {
+            setRunning(true);
+            setLog((prevLog) => prevLog + "\nAutomation Start!");
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -236,7 +152,10 @@ export default function App() {
         {/* Stop Automation Button */}
         <motion.button
           className="px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-br from-pink-200 to-indigo-400 hover:shadow-lg transition-shadow duration-300"
-          onClick={() => setRunning(false)}
+          onClick={() => {
+            setRunning(false);
+            setLog((prevLog) => prevLog + "\nAutomation Stop!");
+          }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
